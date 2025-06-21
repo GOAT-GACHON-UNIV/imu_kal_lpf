@@ -209,13 +209,14 @@ void loop() {
     lpf_Kal_Pitch = ALPHA * lpf_Kal_Pitch + (1 - ALPHA) * Kal_Pitch;
     lpf_Kal_Yaw = ALPHA * lpf_Kal_Yaw + (1 - ALPHA) * Kal_Yaw;
 
-    // === 트리거 판정 ===
+    // == 릴레이 전압 발생 조건 == 
     bool trigger_X = fabs(lpf_Kal_Roll) > THRESHOLD_ROLL_ANGLE && fabs(lpf_angularVelocity_Roll) > THRESHOLD_ROLL_RATE;
     bool trigger_Y = fabs(lpf_Kal_Pitch) > THRESHOLD_PITCH_ANGLE && fabs(lpf_angularVelocity_Pitch) > THRESHOLD_PITCH_RATE;
     bool trigger_Z = fabs(lpf_Kal_Yaw) > THRESHOLD_YAW_ANGLE && fabs(lpf_angularVelocity_Yaw) > THRESHOLD_YAW_RATE;
 
     // === 사출 제어 ===
-    static unsigned long trigger_last_time = 0;
+    // 사출 안정성 강화 : 연산량이 많아 시간차가 존재, 그 시간에 센서가 튀는걸 감지를 못하면 사출되므로 0.2초동안 사출조건이 유지된다면 릴레이전압 가동 
+    static unsigned long trigger_time = 0;
     static bool trigger_pending = false;
 
     if (ejectionStarted && millis() - ejectionStartTime >= 2000) {
@@ -225,13 +226,13 @@ void loop() {
     if ((trigger_X + trigger_Y + trigger_Z) >= 2 && eject_option) {
         if (!trigger_pending) {
             trigger_pending = true;
-            trigger_last_time = millis();
+            trigger_time = millis();
         }
-        if (millis() - trigger_last_time >= 200) {
+        if (millis() - trigger_time >= 200) {
             Parachute_ejection();
         }
-    } 
-    else {
+    }
+     else {
         trigger_pending = false;
     }
 
