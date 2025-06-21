@@ -157,7 +157,8 @@ void loop() {
         if (currentTime - armingStartTime >= 2000) {
             isArming = false;
             Serial.println("Arming Completed, Ready!");
-        } else {
+        } 
+        else {
             return;
         }
     }
@@ -229,7 +230,8 @@ void loop() {
         if (millis() - trigger_last_time >= 200) {
             Parachute_ejection();
         }
-    } else {
+    } 
+    else {
         trigger_pending = false;
     }
 
