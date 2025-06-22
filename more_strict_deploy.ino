@@ -238,8 +238,9 @@ void loop() {
             trigger_time = millis();
         }
         if (millis() - trigger_time >= TRIGGER_HOLD_TIME && millis() - last_eject_time > TRIGGER_RESET_TIME) {
-            last_eject_time = millis();
+            //last_eject_time = millis();
             Parachute_ejection();
+            last_eject_time = millis();
         }
     }
      else {
